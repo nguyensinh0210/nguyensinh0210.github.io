@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Rule engines demo | Nguyen Viet Sinh</title>
+  <style>
+    :root {
+      --bg: #f7f5f0; --surface: #ffffff; --text: #1c1f24; --muted: #5d6470;
+      --line: #e2ded5; --accent: #0b6e5f; --accent-soft: #e3f1ee;
+      --warn: #8a5300; --warn-soft: #fbefd5; --bad: #a3302a; --bad-soft: #fbe6e3;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14171a; --surface: #1c2024; --text: #e8e6e1; --muted: #9aa1ab;
+        --line: #2c3238; --accent: #5cc9b5; --accent-soft: #1d3530;
+        --warn: #e9b765; --warn-soft: #3a2e16; --bad: #f09a92; --bad-soft: #3d1f1c;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; font-size: 16px; }
+    main { max-width: 980px; margin: 0 auto; padding: 40px 16px 64px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1.15; margin: 18px 0 12px; }
+    h2 { font-family: Georgia, serif; font-size: 1.5rem; margin: 0 0 6px; }
+    h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 28px 0 10px; }
+    p { margin: 0 0 12px; }
+    .lead { font-size: 1.1rem; max-width: 68ch; }
+    .note { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; font-size: 0.93rem; max-width: 68ch; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 32px 0 20px; }
+    .tabs button { font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; }
+    .tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+    section[hidden] { display: none; }
+    .ask { color: var(--muted); max-width: 70ch; }
+    .controls { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; margin: 16px 0 10px; }
+    label { font-size: 0.9rem; color: var(--muted); }
+    select, textarea, input[type=number] { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+    textarea { width: 100%; font-family: ui-monospace, Consolas, monospace; font-size: 0.84rem; line-height: 1.5; white-space: pre; overflow: auto; resize: vertical; }
+    input[type=range] { accent-color: var(--accent); vertical-align: middle; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .scroll { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+    th { text-align: left; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    tr.hit td { background: var(--bad-soft); }
+    .mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.82rem; }
+    .small { font-size: 0.82rem; color: var(--muted); }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; white-space: nowrap; }
+    .ok { background: var(--accent-soft); color: var(--accent); }
+    .warn { background: var(--warn-soft); color: var(--warn); }
+    .bad { background: var(--bad-soft); color: var(--bad); }
+    .off { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+    .bar { display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: var(--line); margin-right: 8px; vertical-align: middle; }
+    .bar span { display: block; height: 100%; border-radius: 3px; background: var(--accent); }
+    .bar.low span { background: var(--warn); }
+    ul.why { margin: 0; padding-left: 16px; min-width: 230px; } ul.why li { margin-bottom: 2px; }
+    .summary { font-size: 1.05rem; font-weight: 600; margin: 18px 0 4px; }
+    .finding { border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+    .finding h4 { margin: 0 0 6px; font-size: 1.02rem; }
+    .rules { list-style: none; margin: 0; padding: 0; counter-reset: r; }
+    .rules li { counter-increment: r; padding: 6px 0; }
+    .rules li::before { content: counter(r) "."; color: var(--muted); display: inline-block; width: 22px; }
+    .stmt { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .stmt dl { margin: 0; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; }
+    .stmt dt { color: var(--muted); } .stmt dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+    .stmt .tot { font-weight: 700; color: var(--text); border-top: 1px solid var(--line); padding-top: 6px; margin-top: 4px; }
+    .err { color: var(--bad); font-weight: 600; }
+    details { margin: 12px 0; } summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+    @media (max-width: 680px) { .two, .stmt { grid-template-columns: 1fr; } section { padding: 18px 14px; } }
+  </style>
+</head>
+<body>
+<main>
+  <a href="./">&larr; Nguyen Viet Sinh</a>
+  <h1>Rule engines, live</h1>
+  <p class="lead">Three of the engines from my schema mapping and reconciliation pipeline, working on specific cases. Change the data or the rules and the result updates as you type.</p>
+  <p class="note">Everything here runs in your browser on made-up data. It is a simplified version written for this page; the full pipeline is Python and private because it handles sensitive data.</p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="map" aria-selected="true">1. Read a messy file</button>
+    <button role="tab" data-tab="bal" aria-selected="false">2. Explain a broken balance</button>
+    <button role="tab" data-tab="rec" aria-selected="false">3. Reconcile two files</button>
+  </div>
+
+  <section id="tab-map">
+    <h2>What is each column?</h2>
+    <p class="ask">Every bank names and formats its export differently. The engine reads the column name and the values, scores its confidence, and only applies a mapping by itself when it is sure. Anything below the threshold goes to a person.</p>
+    <div class="controls">
+      <label>Sample file <select id="map-preset"></select></label>
+      <label>Approve automatically at <input type="range" id="map-thr" min="0.5" max="0.99" step="0.01" value="0.8"> <strong id="map-thr-v">0.80</strong></label>
+    </div>
+    <textarea id="map-in" rows="8" spellcheck="false" aria-label="File contents"></textarea>
+    <div id="map-out"></div>
+  </section>
+
+  <section id="tab-bal" hidden>
+    <h2>Why does the balance break?</h2>
+    <p class="ask">When a running balance stops adding up, the engine works backwards. It tests each hypothesis against the exact gap, proposes a correction, then replays the statement to check the correction closes it.</p>
+    <div class="controls">
+      <label>Planted error <select id="bal-preset"></select></label>
+    </div>
+    <textarea id="bal-in" rows="9" spellcheck="false" aria-label="Statement contents"></textarea>
+    <div id="bal-out"></div>
+  </section>
+
+  <section id="tab-rec" hidden>
+    <h2>Which lines belong together?</h2>
+    <p class="ask">A bank statement against a cash book. Rules claim lines in ranked order, and a higher rule overrules a lower one. Switch a rule off or change the date tolerance to see what each rule contributes.</p>
+    <div class="two">
+      <div>
+        <h3>Matching rules, in ranked order</h3>
+        <ol class="rules" id="rec-rules"></ol>
+      </div>
+      <div>
+        <h3>Settings</h3>
+        <p><label>Date tolerance <input type="range" id="rec-tol" min="0" max="7" step="1" value="3"> <strong id="rec-tol-v">3 days</strong></label></p>
+        <p class="small">A match is approved automatically at a confidence of 0.90 or more. Amounts are signed: plus is money into the bank.</p>
+        <details>
+          <summary>Edit the two files</summary>
+          <p class="small">Bank statement</p>
+          <textarea id="rec-bank" rows="8" spellcheck="false" aria-label="Bank statement"></textarea>
+          <p class="small">Cash book</p>
+          <textarea id="rec-book" rows="8" spellcheck="false" aria-label="Cash book"></textarea>
+        </details>
+      </div>
+    </div>
+    <div id="rec-out"></div>
+  </section>
+</main>
+
+<script src="demo-engine.js"></script>
+<script src="demo-data.js"></script>
+<script>
+(function () {
+  'use strict';
+  const E = window.Engine, D = window.DemoData;
+  const $ = id => document.getElementById(id);
+  function el(tag, attrs) {
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) { if (k === 'class') e.className = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    for (let i = 2; i < arguments.length; i++) {
+      const kids = Array.isArray(arguments[i]) ? arguments[i] : [arguments[i]];
+      for (const k of kids) if (k != null && k !== false) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+    }
+    return e;
+  }
+  function table(headers, rows) {
+    const t = el('table', null, el('thead', null, el('tr', null, headers.map(h => el('th', h.num ? { class: 'num' } : null, h.t || h)))));
+    const body = el('tbody');
+    for (const r of rows) {
+      const tr = el('tr', r.hit ? { class: 'hit' } : null);
+      r.cells.forEach((c, i) => tr.append(el('td', headers[i].num ? { class: 'num' } : null, c)));
+      body.append(tr);
+    }
+    t.append(body);
+    return el('div', { class: 'scroll' }, t);
+  }
+  const money = v => v == null ? '' : E.fmt(Math.round(v * 100));
+  const badge = (cls, text) => el('span', { class: 'badge ' + cls }, text);
+  const conf = c => el('span', null, el('span', { class: 'bar' + (c < 0.8 ? ' low' : '') }, el('span', { style: 'width:' + Math.round(c * 100) + '%' })), c.toFixed(2));
+  function guard(out, fn) {
+    out.replaceChildren();
+    try { fn(); } catch (e) { out.replaceChildren(el('p', { class: 'err' }, 'Could not read that: ' + e.message)); }
+  }
+  function fillPresets(select, list, input, render) {
+    list.forEach((p, i) => select.append(el('option', { value: i }, p.name)));
+    select.addEventListener('change', () => { input.value = list[select.value].text; render(); });
+    input.value = list[0].text;
+    input.addEventListener('input', render);
+  }
+
+  // tabs
+  function showTab(name) {
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.tab === name ? 'true' : 'false'));
+    for (const t of ['map', 'bal', 'rec']) $('tab-' + t).hidden = t !== name;
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    showTab(b.dataset.tab);
+    try { history.replaceState(null, '', '#' + b.dataset.tab); } catch (e) {}
+  }));
+  if (['bal', 'rec'].includes(location.hash.slice(1))) showTab(location.hash.slice(1));
+
+  // ---------------- 1. column mapping
+  const STATUS = { approved: ['ok', 'Approved automatically'], review: ['warn', 'Needs review'], excluded: ['off', 'Left out'], ignored: ['off', 'Ignored'] };
+  function renderMap() {
+    const thr = +$('map-thr').value;
+    $('map-thr-v').textContent = thr.toFixed(2);
+    guard($('map-out'), () => {
+      const out = $('map-out'), t = E.parseCSV($('map-in').value);
+      if (!t.headers.length || !t.rows.length) throw new Error('paste a header row and at least one data row.');
+      const m = E.mapColumns(t, thr), c = E.cleanTable(t, m);
+      const n = s => m.filter(x => x.status === s).length;
+      out.append(el('p', { class: 'summary' }, m.length + ' columns: ' + n('approved') + ' approved automatically, ' + n('review') + ' sent for review, ' + (n('excluded') + n('ignored')) + ' left out.'));
+      out.append(table(['Column', 'Sample values', 'Looks like', 'Mapped to', 'Confidence', 'Decision', 'Why'], m.map(x => ({
+        cells: [
+          el('strong', null, x.name), el('span', { class: 'mono' }, x.samples.join(' · ')),
+          E.NATURE_LABEL[x.nature], x.target || '—', conf(x.conf), badge(STATUS[x.status][0], STATUS[x.status][1]),
+          el('ul', { class: 'why small' }, x.evidence.map(e => el('li', null, e)), x.alternatives.length ? el('li', null, 'Alternatives: ' + x.alternatives.join(', ')) : null)
+        ]
+      }))));
+      if (c.decisions.length) {
+        out.append(el('h3', null, 'Decisions made from the values'));
+        out.append(el('ul', null, c.decisions.map(d => el('li', null, el('strong', null, d.label + ': ' + d.value), ' — ' + d.reason + '. ', d.ambiguous ? badge('warn', 'Needs review') : null))));
+      }
+      out.append(el('h3', null, 'Cells repaired: ' + c.repairs.length + (c.problems.length ? ' · Problems: ' + c.problems.length : '')));
+      if (c.repairs.length) out.append(el('ul', { class: 'small' },
+        c.repairs.slice(0, 6).map(r => el('li', null, 'Row ' + r.row + ', ' + r.column + ': ', el('span', { class: 'mono' }, r.raw + ' → ' + r.parsed), ' (' + r.note + ')')),
+        c.repairs.length > 6 ? el('li', null, 'and ' + (c.repairs.length - 6) + ' more') : null));
+      if (c.problems.length) out.append(el('ul', { class: 'small' }, c.problems.map(r => el('li', null, 'Row ' + r.row + ', ' + r.column + ': ', el('span', { class: 'mono' }, r.raw), ' (' + r.note + ')'))));
+      out.append(el('h3', null, 'The file after mapping and cleaning'));
+      out.append(table(['Date', 'Description', 'Reference', { t: 'Amount', num: 1 }, { t: 'Balance', num: 1 }],
+        c.rows.slice(0, 10).map(r => ({ cells: [r.date || '', r.description, r.reference, money(r.amount), money(r.balance)] }))));
+    });
+  }
+  fillPresets($('map-preset'), D.mapping, $('map-in'), renderMap);
+  $('map-thr').addEventListener('input', renderMap);
+
+  // ---------------- 2. balance attribution
+  function renderBal() {
+    guard($('bal-out'), () => {
+      const out = $('bal-out'), r = E.analyseStatement($('bal-in').value);
+      if (!r.breaks.length) out.append(el('p', { class: 'summary' }, 'The statement adds up: every balance follows from the row above.'));
+      else out.append(el('p', { class: 'summary' },
+        'The balance breaks on ' + r.breaks.length + ' row' + (r.breaks.length > 1 ? 's' : '') + '. The engine explains ' + (r.breaks.length > 1 ? 'them' : 'it') + ' with ' + r.findings.length + ' finding' + (r.findings.length > 1 ? 's' : '') + '. ',
+        r.after === 0 ? badge('ok', 'Corrections replayed: the statement adds up') : badge('warn', 'After corrections ' + r.after + ' break(s) remain')));
+      for (const f of r.findings) out.append(el('div', { class: 'finding' },
+        el('h4', null, 'Row ' + f.rowNo + ': ' + f.kind + ' ', badge(f.conf >= 0.8 ? 'ok' : 'warn', 'confidence ' + f.conf.toFixed(2))),
+        el('p', null, f.why), el('p', null, el('strong', null, 'Proposed correction: '), f.fix)));
+      const hit = new Map(r.breaks.map(b => [b.i, b]));
+      out.append(el('h3', null, 'The statement, row by row'));
+      out.append(table(['Row', 'Date', 'Description', { t: 'Amount', num: 1 }, { t: 'Stated balance', num: 1 }, { t: 'Expected', num: 1 }, { t: 'Gap', num: 1 }],
+        r.items.map((it, i) => {
+          const b = hit.get(i);
+          return { hit: !!b, cells: [it.rowNo, it.date, it.description, it.a ? E.fmt(it.a) : '', E.fmt(it.bal), i ? E.fmt(r.items[i - 1].bal + it.a) : '', b ? E.fmt(b.gap) : ''] };
+        })));
+    });
+  }
+  fillPresets($('bal-preset'), D.balance, $('bal-in'), renderBal);
+
+  // ---------------- 3. reconciliation
+  const RULE_NAME = {};
+  E.RULES.forEach(r => {
+    RULE_NAME[r.id] = r.label;
+    $('rec-rules').append(el('li', null, el('label', null, el('input', { type: 'checkbox', id: 'rule-' + r.id, checked: '' }), ' ', el('strong', null, r.label), ': ' + r.desc)));
+  });
+  $('rec-bank').value = D.recon.bank; $('rec-book').value = D.recon.book;
+  const line = x => el('div', null, el('span', { class: 'mono' }, x.id), ' ' + x.date + ' · ' + x.desc + (x.ref ? ' · ' + x.ref : '') + ' · ', el('strong', null, E.fmt(x.amount)));
+  function renderRec() {
+    const tol = +$('rec-tol').value;
+    $('rec-tol-v').textContent = tol + (tol === 1 ? ' day' : ' days');
+    guard($('rec-out'), () => {
+      const out = $('rec-out');
+      const bank = E.loadEntries($('rec-bank').value, 'B'), book = E.loadEntries($('rec-book').value, 'K');
+      const rules = {}, all = {};
+      E.RULES.forEach(r => { rules[r.id] = $('rule-' + r.id).checked; all[r.id] = true; });
+      const r = E.reconcile(bank, book, { rules, tolerance: tol, opening: D.recon.opening });
+      const base = E.reconcile(bank, book, { rules: all, tolerance: 3, opening: D.recon.opening });
+      const ch = E.countChanges(base.results, r.results);
+      const ok = r.matches.filter(m => m.status === 'approved').length;
+      out.append(el('p', { class: 'summary' }, bank.length + ' bank lines and ' + book.length + ' book entries: ' + r.matches.length + ' matches (' + ok + ' approved automatically, ' + (r.matches.length - ok) + ' for review), ' + r.bankOnly.length + ' bank lines and ' + r.bookOnly.length + ' book entries explained.'));
+      if (ch.answers || ch.rules) out.append(el('p', { class: 'note' },
+        'Compared with all rules on and a 3-day tolerance: ' + ch.answers + ' line' + (ch.answers === 1 ? '' : 's') + ' got a different answer, and ' + ch.rules + ' got the same answer from a lower rule acting as a backup. ',
+        r.statement.balanced ? 'The statement below still balances, which is why a balance check alone cannot catch a wrong or missing match.' : ''));
+      out.append(el('h3', null, 'Matches'));
+      out.append(table(['Rule', 'Bank', 'Cash book', 'Confidence', 'Decision', 'Note'], r.matches.map(m => ({
+        cells: [RULE_NAME[m.rule], m.bank.map(line), m.book.map(line), conf(m.conf),
+          badge(m.status === 'approved' ? 'ok' : 'warn', m.status === 'approved' ? 'Approved automatically' : 'Needs review'),
+          el('span', { class: 'small' }, m.note + (m.diff ? ' (difference ' + E.fmt(m.diff) + ')' : ''))]
+      }))));
+      const alone = (title, list) => {
+        out.append(el('h3', null, title));
+        out.append(list.length ? table(['Line', 'Explanation', 'What to do'], list.map(x => ({ cells: [line(x.entry), badge(x.duplicate ? 'bad' : 'off', x.label), el('span', { class: 'small' }, x.action)] })))
+          : el('p', { class: 'small' }, 'None.'));
+      };
+      alone('Bank lines with no partner', r.bankOnly);
+      alone('Book entries with no partner', r.bookOnly);
+      const s = r.statement, row = (k, v, tot) => [el('dt', tot ? { class: 'tot' } : null, k), el('dd', tot ? { class: 'tot' } : null, E.fmt(v))];
+      out.append(el('h3', null, 'Reconciliation statement'));
+      out.append(el('div', { class: 'stmt' },
+        el('dl', null, row('Balance per bank', s.bankBal), row('Timing items not yet at the bank', s.timing), row('Adjusted bank balance', s.adjBank, true)),
+        el('dl', null, row('Balance per books', s.bookBal), row('Bank items not yet in the books', s.notInBooks), row('Duplicate entries removed', -s.dups), row('Posting errors corrected', s.errors), row('Adjusted book balance', s.adjBook, true))));
+      out.append(el('p', null, s.balanced ? badge('ok', 'Adjusted bank equals adjusted books') : badge('bad', 'The two sides differ by ' + E.fmt(s.adjBank - s.adjBook))));
+    });
+  }
+  ['rec-tol', 'rec-bank', 'rec-book'].forEach(id => $(id).addEventListener('input', renderRec));
+  E.RULES.forEach(r => $('rule-' + r.id).addEventListener('change', renderRec));
+
+  renderMap(); renderBal(); renderRec();
+})();
+</script>
+</body>
+</html>

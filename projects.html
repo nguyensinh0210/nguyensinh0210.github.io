@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Projects | Nguyen Viet Sinh</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main>
+  <nav>
+    <a href="./">Nguyen Viet Sinh</a>
+    <a href="projects.html" aria-current="page">Projects</a>
+    <a href="demo.html">Live demo</a>
+    <a href="freelance.html">Freelance</a>
+  </nav>
+
+  <h1>Hands-on projects</h1>
+  <p class="lead">What I have built, why, and how each one works. Where a project handles sensitive information, it is described here without code or data.</p>
+
+  <article class="card" id="documents">
+    <span class="tag">At work</span><span class="tag plain">AI automation</span>
+    <h2>AI-assisted document analysis</h2>
+    <p class="stat">A team of 12 became a team of 3.</p>
+    <h3>The problem</h3>
+    <p>Reading financial documents and keying their contents into a system is slow, repetitive work, and every supplier and bank lays its documents out differently. The work needed twelve people.</p>
+    <h3>What I built</h3>
+    <p>A workflow in which language models read the documents and extract the data, so people check results instead of typing them. Large and small models each do the part they are good at.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li>Optical character recognition turns each page into text with its position on the page.</li>
+      <li>A language model finds the tables and works out the column names from the document itself, instead of relying on a fixed template for each layout.</li>
+      <li>The same step drafts the training labels for a custom extraction model, which a person reviews instead of drawing by hand.</li>
+    </ul>
+    <p class="stack">Azure AI Document Intelligence · language models · Python</p>
+  </article>
+
+  <article class="card" id="reconciliation">
+    <span class="tag">Data pipeline</span><span class="tag plain">Private code</span>
+    <h2>Schema mapping and bank reconciliation pipeline</h2>
+    <h3>The problem</h3>
+    <p>Before two financial files can be reconciled, someone has to work out what each column means, clean the cells, and line the two files up. Every bank and ledger export is different, so that work was done by hand each time.</p>
+    <h3>What I built</h3>
+    <p>A pipeline that takes a raw file through to a finished reconciliation statement, and explains each decision it makes on the way.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li><strong>Profiling</strong> measures every column: types, distinct values, patterns.</li>
+      <li><strong>Mapping</strong> decides what each column is from its name and its values, with a confidence score. Uncertain mappings become proposals for a person, and every decision is written to an audit log.</li>
+      <li><strong>Quality</strong> parses real-world cells such as "1.234,56", "(500)" and "12/03/25", and records each repair.</li>
+      <li><strong>Reconciliation</strong> matches lines with ranked rules, then explains every line left alone: bank charges, outstanding cheques, duplicate entries.</li>
+      <li><strong>Attribution</strong> works backwards from a broken balance to the cell or decision that caused it.</li>
+      <li><strong>Impact</strong> shows what would change if a rule were switched off or reordered, and <strong>learning</strong> proposes new rules from labelled data.</li>
+    </ul>
+    <p class="stack">Python · Polars · Pydantic · Pandera · about 19,000 lines · 219 unit tests</p>
+    <p><a href="demo.html"><strong>Try three of its engines on live cases &rarr;</strong></a></p>
+  </article>
+
+  <article class="card" id="legal">
+    <span class="tag plain">Personal</span><span class="tag plain">Data collection · law</span>
+    <h2>Vietnamese legal database</h2>
+    <h3>The problem</h3>
+    <p>Vietnamese court judgments and the laws they cite are published on separate government sites, mostly as documents meant for reading. Nothing links a judgment to the exact articles it relies on.</p>
+    <h3>What I built</h3>
+    <p>A pipeline that collects published judgments by case category, extracts the laws and articles each one cites, then downloads that legislation and stores both in one database. It draws on my law degree as much as on my data work.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li>Three steps that skip work already done, so the pipeline is safe to rerun.</li>
+      <li>Legislation is stored in its real structure, from part and chapter down to article, clause and point.</li>
+      <li>Judgments are stored with their court, parties, panel and citations, linked to the cited articles.</li>
+      <li>A wrong match cannot slip in: a downloaded law is refused if its document number differs from the citation.</li>
+    </ul>
+    <p class="stack">Python · PostgreSQL · SQLAlchemy · public sources only</p>
+  </article>
+
+  <article class="card" id="channel">
+    <span class="tag plain">Personal</span><span class="tag plain">Automation · security</span>
+    <h2>Channel Manager</h2>
+    <h3>The problem</h3>
+    <p>Publishing the same video to YouTube, TikTok and Facebook means three uploads and three schedules. Most tools that automate it ask for your passwords.</p>
+    <h3>What I built</h3>
+    <p>A command-line tool that publishes and schedules from one queue file, run automatically by Windows Task Scheduler. I designed it around security first.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li>It uses only the official APIs, and signs in through each platform's own login page. No password is ever stored.</li>
+      <li>It asks for the fewest permissions that work. Nothing it holds can delete a channel or a video.</li>
+      <li>Access tokens are encrypted on the device, and the key is protected by the Windows login.</li>
+      <li>Logs are stripped of secrets before they are written.</li>
+    </ul>
+    <p class="stack">Python · YouTube Data API · TikTok Content Posting API · Facebook Graph API · OAuth with PKCE</p>
+  </article>
+
+  <article class="card" id="agent">
+    <span class="tag plain">Personal</span><span class="tag plain">In progress</span>
+    <h2>Browser agent bridge</h2>
+    <h3>The idea</h3>
+    <p>Let a code editor hand a task to an AI assistant that is open in the browser, and get the answer back, without copying text between windows.</p>
+    <h3>What is built so far</h3>
+    <ul>
+      <li>A small local service that passes messages between a VS Code extension and a browser extension. It is working and has its own routing test.</li>
+      <li>A browser extension that connects to the service and answers with a stand-in assistant. Driving a real assistant page is the next step.</li>
+    </ul>
+    <p class="stack">TypeScript · WebSocket · browser extension</p>
+  </article>
+
+  <article class="card" id="flow">
+    <span class="tag plain">Personal</span><span class="tag plain">Workflow automation</span>
+    <h2>Email attachments to OneDrive</h2>
+    <p>A reusable Power Automate flow that watches an Outlook inbox and saves every attachment to a OneDrive folder, packaged so it can be imported in a few clicks. A small example of the routine office automation I do.</p>
+    <p class="stack">Power Automate · Logic Apps definition</p>
+  </article>
+</main>
+<footer>
+  <a href="./">Home</a> · <a href="mailto:nguyensinh2912@gmail.com">nguyensinh2912@gmail.com</a>
+</footer>
+</body>
+</html>

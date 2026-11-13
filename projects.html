@@ -55,60 +55,6 @@
     <p class="stack">Python · Polars · Pydantic · Pandera · about 19,000 lines · 219 unit tests</p>
     <p><a href="demo.html"><strong>Try three of its engines on live cases &rarr;</strong></a></p>
   </article>
-
-  <article class="card" id="legal">
-    <span class="tag plain">Personal</span><span class="tag plain">Data collection · law</span>
-    <h2>Vietnamese legal database</h2>
-    <h3>The problem</h3>
-    <p>Vietnamese court judgments and the laws they cite are published on separate government sites, mostly as documents meant for reading. Nothing links a judgment to the exact articles it relies on.</p>
-    <h3>What I built</h3>
-    <p>A pipeline that collects published judgments by case category, extracts the laws and articles each one cites, then downloads that legislation and stores both in one database. It draws on my law degree as much as on my data work.</p>
-    <h3>How it works</h3>
-    <ul>
-      <li>Three steps that skip work already done, so the pipeline is safe to rerun.</li>
-      <li>Legislation is stored in its real structure, from part and chapter down to article, clause and point.</li>
-      <li>Judgments are stored with their court, parties, panel and citations, linked to the cited articles.</li>
-      <li>A wrong match cannot slip in: a downloaded law is refused if its document number differs from the citation.</li>
-    </ul>
-    <p class="stack">Python · PostgreSQL · SQLAlchemy · public sources only</p>
-  </article>
-
-  <article class="card" id="channel">
-    <span class="tag plain">Personal</span><span class="tag plain">Automation · security</span>
-    <h2>Channel Manager</h2>
-    <h3>The problem</h3>
-    <p>Publishing the same video to YouTube, TikTok and Facebook means three uploads and three schedules. Most tools that automate it ask for your passwords.</p>
-    <h3>What I built</h3>
-    <p>A command-line tool that publishes and schedules from one queue file, run automatically by Windows Task Scheduler. I designed it around security first.</p>
-    <h3>How it works</h3>
-    <ul>
-      <li>It uses only the official APIs, and signs in through each platform's own login page. No password is ever stored.</li>
-      <li>It asks for the fewest permissions that work. Nothing it holds can delete a channel or a video.</li>
-      <li>Access tokens are encrypted on the device, and the key is protected by the Windows login.</li>
-      <li>Logs are stripped of secrets before they are written.</li>
-    </ul>
-    <p class="stack">Python · YouTube Data API · TikTok Content Posting API · Facebook Graph API · OAuth with PKCE</p>
-  </article>
-
-  <article class="card" id="agent">
-    <span class="tag plain">Personal</span><span class="tag plain">In progress</span>
-    <h2>Browser agent bridge</h2>
-    <h3>The idea</h3>
-    <p>Let a code editor hand a task to an AI assistant that is open in the browser, and get the answer back, without copying text between windows.</p>
-    <h3>What is built so far</h3>
-    <ul>
-      <li>A small local service that passes messages between a VS Code extension and a browser extension. It is working and has its own routing test.</li>
-      <li>A browser extension that connects to the service and answers with a stand-in assistant. Driving a real assistant page is the next step.</li>
-    </ul>
-    <p class="stack">TypeScript · WebSocket · browser extension</p>
-  </article>
-
-  <article class="card" id="flow">
-    <span class="tag plain">Personal</span><span class="tag plain">Workflow automation</span>
-    <h2>Email attachments to OneDrive</h2>
-    <p>A reusable Power Automate flow that watches an Outlook inbox and saves every attachment to a OneDrive folder, packaged so it can be imported in a few clicks. A small example of the routine office automation I do.</p>
-    <p class="stack">Power Automate · Logic Apps definition</p>
-  </article>
 </main>
 <footer>
   <a href="./">Home</a> · <a href="mailto:nguyensinh2912@gmail.com">nguyensinh2912@gmail.com</a>

@@ -66,6 +66,7 @@
     <p>My background is unusual for a data person: accounting and auditing, banking back office, hospital finance, and a law degree. It means I understand the business problem before I write the code.</p>
     <div class="links">
       <a class="btn primary" href="demo.html">Try the live demo</a>
+      <a class="btn" href="cv.pdf" download>Download CV (PDF)</a>
       <a class="btn" href="projects.html">Projects</a>
       <a class="btn" href="freelance.html">Freelance work</a>
       <a class="btn" href="mailto:nguyensinh2912@gmail.com">Email me</a>
@@ -76,26 +77,45 @@
   <h2>Selected work</h2>
 
   <article class="card">
-    <span class="tag">AI automation</span>
-    <h3>AI-assisted document analysis</h3>
-    <p class="stat">A team of 12 became a team of 3.</p>
-    <p>I applied large and small language models to document analysis and data extraction, so that work which needed twelve people is now handled by three.</p>
-    <p class="stack">LLMs · SLMs · Python · workflow automation</p>
-    <p style="margin:14px 0 0"><a href="projects.html#documents"><strong>How it works &rarr;</strong></a></p>
+    <span class="tag">Data pipeline · AI · private code</span>
+    <h3>AI document extraction, schema mapping and bank reconciliation</h3>
+    <p>Financial documents and ledger exports all lay out and name their data differently, so reconciling them usually starts with typing and manual cleaning. I built one pipeline that takes a raw document to a finished reconciliation and explains its own decisions.</p>
+    <ul>
+      <li>OCR and language models read the documents and extract the tables, so people check results instead of typing them.</li>
+      <li>Works out what each column is from its name and values, scores its confidence, sends uncertain cases to a person, and keeps an audit trail.</li>
+      <li>Repairs the cells, then reconciles a bank statement against a cash book.</li>
+      <li>A discovery engine finds the keys, formulas and root-cause cells across related tables from the values alone, explains each finding with evidence, and stores every run in PostgreSQL.</li>
+      <li>Tested against synthetic statements with a known correct answer, to find where it breaks.</li>
+    </ul>
+    <p class="stack">Python · Polars · Pydantic · Pandera · PostgreSQL · about 22,800 lines · 298 tests. The code is private because it handles sensitive data.</p>
+    <p style="margin:14px 0 0"><a href="demo.html"><strong>See three of its engines work on live cases &rarr;</strong></a> · <a href="projects.html#pipeline">How it works</a></p>
   </article>
 
   <article class="card">
-    <span class="tag">Data pipeline · private code</span>
-    <h3>Schema mapping and bank reconciliation pipeline</h3>
-    <p>Every bank statement and ledger export names and formats its columns differently, so reconciling them usually starts with manual mapping and cleaning. I built a pipeline that does that work and explains its own decisions.</p>
+    <span class="tag">Internal tool · AI</span>
+    <h3>AI assistant for internal CRM tools</h3>
+    <p>Staff can work with the company CRM in plain language instead of clicking through screens.</p>
     <ul>
-      <li>Profiles a raw file and works out what each column is from its name and its values.</li>
-      <li>Scores its confidence, sends uncertain mappings to a person, and keeps an audit trail of every decision.</li>
-      <li>Repairs the cells, then reconciles the statement against a cash book.</li>
-      <li>Traces a broken balance back to the cell or decision that caused it, shows what would change if a rule changed, and learns new matching rules from labelled data.</li>
+      <li>Summarises long email threads into key points, open questions and next actions.</li>
+      <li>Turns plain-language requests into CRM lookups and updates.</li>
+      <li>Runs several tasks against the system in parallel, so a batch of records is handled in one go.</li>
     </ul>
-    <p class="stack">Python · Polars · Pydantic · Pandera · about 19,000 lines · 219 unit tests. The code is private because it handles sensitive data.</p>
-    <p style="margin:14px 0 0"><a href="demo.html"><strong>See three of its engines work on live cases &rarr;</strong></a></p>
+    <p class="stack">Language models · Python · CRM integration</p>
+    <p style="margin:14px 0 0"><a href="projects.html#crm"><strong>How it works &rarr;</strong></a></p>
+  </article>
+
+  <article class="card">
+    <span class="tag">Freelance · personal</span>
+    <h3>Vietnamese legal database</h3>
+    <p>Collected public court judgments and the legislation they cite, extracted the citations, and modelled both in a relational database.</p>
+    <p class="stack">Python · PostgreSQL</p>
+  </article>
+
+  <article class="card">
+    <span class="tag">Freelance · personal</span>
+    <h3>Publishing tool for YouTube, TikTok and Facebook</h3>
+    <p>Uses only the official APIs with OAuth, least-privilege permissions and an encrypted local store for access tokens, so no password is ever saved.</p>
+    <p class="stack">Python · official platform APIs · OAuth</p>
   </article>
 
   <p><a href="projects.html"><strong>How each project works &rarr;</strong></a></p>
@@ -106,31 +126,31 @@
     <div class="when">Jul 2021 – Present</div>
     <div>
       <h3>Profectus Group</h3>
-      <p>Senior Data Analyst &amp; Automation Engineer. Data integration with Python and Azure Data Factory, ETL pipelines, process automation, and AI-assisted document analysis.</p>
+      <p>Senior Data Analyst &amp; Automation Engineer at an Australian audit-and-recovery firm. Led cross-department data integration with Python and Azure Data Factory into a central repository for business and compliance reporting; built and maintained ETL pipelines; automated operational processes with Python, VBA and AI tools; and validated and reconciled multi-source data with finance, audit and operations teams.</p>
     </div>
   </div>
   <div class="job">
     <div class="when">Feb 2020 – Jul 2021</div>
     <div>
       <h3>FV Hospital</h3>
-      <p>Finance team. Billing resolution, invoicing and payment processing.</p>
+      <p>Finance team. Resolved billing issues with patients and internal stakeholders, keeping invoicing and payment processing accurate and on time.</p>
     </div>
   </div>
   <div class="job">
     <div class="when">Jul 2016 – Jul 2019</div>
     <div>
       <h3>Banking</h3>
-      <p>Back Office Operations Officer. Loan drawdown verification and multi-source data reconciliation.</p>
+      <p>Back Office Operations Officer. Prepared and verified loan drawdowns end to end, and reconciled data across multiple sources to catch discrepancies.</p>
     </div>
   </div>
 
   <h2>Skills</h2>
   <dl class="skills">
-    <dt>Languages</dt><dd>Python (Pandas, NumPy, Polars), SQL, VBA</dd>
+    <dt>Languages</dt><dd>Python (Pandas, NumPy, Polars, Matplotlib), SQL, VBA</dd>
     <dt>Cloud and pipelines</dt><dd>Azure Data Factory, Azure Databricks, ETL development, data integration</dd>
     <dt>Databases</dt><dd>Snowflake, PostgreSQL, Azure SQL Database</dd>
-    <dt>BI and analysis</dt><dd>Power BI, advanced Excel, statistical analysis</dd>
-    <dt>AI and automation</dt><dd>LLM and SLM document analysis, data extraction, workflow automation</dd>
+    <dt>BI and analysis</dt><dd>Power BI, advanced Excel, statistical analysis, data visualisation</dd>
+    <dt>AI and automation</dt><dd>LLM and SLM document analysis, data extraction, LLM assistants for internal tools, workflow automation</dd>
     <dt>Domain</dt><dd>Reconciliation, accounting and audit, banking operations, compliance</dd>
     <dt>Spoken</dt><dd>Vietnamese (native), English (fluent)</dd>
   </dl>
@@ -145,8 +165,15 @@
     <div><h3>Bachelor of Accounting &amp; Auditing</h3><p>Academy of Finance</p></div>
   </div>
 
+  <h2>Certifications</h2>
+  <ul>
+    <li>Excel/VBA for Creative Problem Solving (Coursera)</li>
+    <li>Fundamentals of Quantitative Modeling (Coursera)</li>
+    <li>Python for Command-and-Control, Exfiltration and Impact (Coursera, cybersecurity)</li>
+  </ul>
+
   <h2>Contact</h2>
-  <p>I am open to remote roles in data analytics, data engineering and automation. The fastest way to reach me is <a href="mailto:nguyensinh2912@gmail.com">nguyensinh2912@gmail.com</a>.</p>
+  <p>I am open to remote roles in data analytics, data engineering and automation. The fastest way to reach me is <a href="mailto:nguyensinh2912@gmail.com">nguyensinh2912@gmail.com</a>. You can also <a href="cv.pdf" download>download my CV as a PDF</a>.</p>
 </main>
 <footer>
   Also hosted here: <a href="channel-manager.html">Channel Manager</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a>

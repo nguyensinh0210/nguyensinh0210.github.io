@@ -19,41 +19,57 @@
   <h1>Hands-on projects</h1>
   <p class="lead">What I have built, why, and how each one works. Where a project handles sensitive information, it is described here without code or data.</p>
 
-  <article class="card" id="documents">
-    <span class="tag">At work</span><span class="tag plain">AI automation</span>
-    <h2>AI-assisted document analysis</h2>
-    <p class="stat">A team of 12 became a team of 3.</p>
+  <span id="documents"></span><span id="reconciliation"></span>
+  <article class="card" id="pipeline">
+    <span class="tag">Data pipeline · AI</span><span class="tag plain">Private code</span>
+    <h2>AI document extraction, schema mapping and bank reconciliation</h2>
     <h3>The problem</h3>
-    <p>Reading financial documents and keying their contents into a system is slow, repetitive work, and every supplier and bank lays its documents out differently. The work needed twelve people.</p>
+    <p>Financial documents and ledger exports all lay out and name their data differently. Before two sets of figures can be reconciled, someone has to key the data in, work out what each column means, clean the cells and line the files up. That was done by hand each time.</p>
     <h3>What I built</h3>
-    <p>A workflow in which language models read the documents and extract the data, so people check results instead of typing them. Large and small models each do the part they are good at.</p>
+    <p>One pipeline that takes a raw document through to a finished reconciliation, and explains each decision it makes on the way.</p>
     <h3>How it works</h3>
     <ul>
-      <li>Optical character recognition turns each page into text with its position on the page.</li>
-      <li>A language model finds the tables and works out the column names from the document itself, instead of relying on a fixed template for each layout.</li>
-      <li>The same step drafts the training labels for a custom extraction model, which a person reviews instead of drawing by hand.</li>
-    </ul>
-    <p class="stack">Azure AI Document Intelligence · language models · Python</p>
-  </article>
-
-  <article class="card" id="reconciliation">
-    <span class="tag">Data pipeline</span><span class="tag plain">Private code</span>
-    <h2>Schema mapping and bank reconciliation pipeline</h2>
-    <h3>The problem</h3>
-    <p>Before two financial files can be reconciled, someone has to work out what each column means, clean the cells, and line the two files up. Every bank and ledger export is different, so that work was done by hand each time.</p>
-    <h3>What I built</h3>
-    <p>A pipeline that takes a raw file through to a finished reconciliation statement, and explains each decision it makes on the way.</p>
-    <h3>How it works</h3>
-    <ul>
+      <li><strong>Extraction</strong>: optical character recognition turns each page into text with its position, and a language model finds the tables and works out the column names from the document itself, instead of a fixed template per layout. The same step drafts training labels for a custom extraction model, which a person reviews instead of drawing by hand.</li>
       <li><strong>Profiling</strong> measures every column: types, distinct values, patterns.</li>
       <li><strong>Mapping</strong> decides what each column is from its name and its values, with a confidence score. Uncertain mappings become proposals for a person, and every decision is written to an audit log.</li>
       <li><strong>Quality</strong> parses real-world cells such as "1.234,56", "(500)" and "12/03/25", and records each repair.</li>
       <li><strong>Reconciliation</strong> matches lines with ranked rules, then explains every line left alone: bank charges, outstanding cheques, duplicate entries.</li>
-      <li><strong>Attribution</strong> works backwards from a broken balance to the cell or decision that caused it.</li>
-      <li><strong>Impact</strong> shows what would change if a rule were switched off or reordered, and <strong>learning</strong> proposes new rules from labelled data.</li>
+      <li><strong>Attribution</strong> works backwards from a broken balance to the cell or decision that caused it. <strong>Impact</strong> shows what would change if a rule were switched off or reordered, and <strong>learning</strong> proposes new rules from labelled data.</li>
+      <li><strong>Discovery engine</strong>: given a set of related tables, it works out from the values alone, not the column names, which keys link them, which numbers are computed from which, which rules decide a value, which cells are wrong and what they should be. Each finding is presented as a case with the evidence for and against, and an LLM is asked only where the data cannot settle a question. Every run is stored in PostgreSQL, one schema per step, so it can be reviewed later.</li>
+      <li><strong>Testing</strong>: a generator produces bank statements and cash books with a known correct answer, adds noise at controlled rates, and sweeps the rates to find where the pipeline breaks.</li>
     </ul>
-    <p class="stack">Python · Polars · Pydantic · Pandera · about 19,000 lines · 219 unit tests</p>
+    <p class="stack">Python · Polars · Pydantic · Pandera · PostgreSQL · Azure AI Document Intelligence · language models · about 22,800 lines · 298 tests</p>
     <p><a href="demo.html"><strong>Try three of its engines on live cases &rarr;</strong></a></p>
+  </article>
+
+  <article class="card" id="crm">
+    <span class="tag">At work</span><span class="tag plain">Internal tool · AI</span>
+    <h2>AI assistant for internal CRM tools</h2>
+    <h3>The problem</h3>
+    <p>Day-to-day CRM work means reading long email threads and clicking through many screens to look up or update records, one at a time.</p>
+    <h3>What I built</h3>
+    <p>An assistant that lets staff work with the company CRM in plain language.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li><strong>Email summaries</strong>: condenses a long thread into key points, open questions and next actions.</li>
+      <li><strong>Plain-language requests</strong>: turns a request into the matching CRM lookups and updates.</li>
+      <li><strong>Parallel runs</strong>: runs several tasks against the system at the same time, so a batch of records is handled in one go.</li>
+    </ul>
+    <p class="stack">Language models · Python · CRM integration</p>
+  </article>
+
+  <article class="card" id="legal">
+    <span class="tag">Freelance</span><span class="tag plain">Data modelling</span>
+    <h2>Vietnamese legal database</h2>
+    <p>Collected public court judgments and the legislation they cite, extracted the citations, and modelled both in a relational database so a judgment can be traced to the law it relies on, and the other way round.</p>
+    <p class="stack">Python · PostgreSQL</p>
+  </article>
+
+  <article class="card" id="publishing">
+    <span class="tag">Freelance</span><span class="tag plain">Integration</span>
+    <h2>Publishing tool for YouTube, TikTok and Facebook</h2>
+    <p>Publishes content through the official APIs only, with OAuth, least-privilege permissions and an encrypted local store for access tokens, so no password is ever saved.</p>
+    <p class="stack">Python · official platform APIs · OAuth</p>
   </article>
 </main>
 <footer>
